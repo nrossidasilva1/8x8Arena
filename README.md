@@ -29,7 +29,7 @@ dashboard.
 
 ## Documentation
 
-- 📄 [Project Proposal](docs/proposal.pdf)
+- 📄 [Project Proposal](PROPOSAL.pdf)
 
 ## Author
 
