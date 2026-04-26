@@ -7,7 +7,7 @@ movement commands from their phones or browsers over MQTT.
 
 Project Status
 
-🚧 Work in progress — Started April 2026 as part of the
+Work in progress — Started April 2026 as part of the
 Computer Systems and Networks module (HDip Computer Science,
 2026).
 
