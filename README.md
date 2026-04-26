@@ -22,7 +22,7 @@ dashboard.
 Tech Stack
 
 - Hardware: Raspberry Pi + SenseHAT, Pi Camera Module 3
-- **Languages: Python 3, HTML/CSS/JavaScript
+- Languages: Python 3, HTML/CSS/JavaScript
 - Protocols: MQTT (Mosquitto), HTTP
 - Libraries: `paho-mqtt`, `sense-hat`, MQTT.js (over WebSockets)
 - Tools: VS Code, Git & GitHub
