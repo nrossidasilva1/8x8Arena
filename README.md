@@ -29,7 +29,9 @@ dashboard.
 
 ## Documentation
 
-- 📄 [Project Proposal](PROPOSAL.pdf)
+- [Project Proposal](PROPOSAL.pdf)
+- [Game Rules](docs/RULES.md)
+- [MQTT Protocol](docs/PROTOCOL.md)
 
 ## Author
 
