@@ -19,7 +19,7 @@ client.on_message = on_message
 client.connect(BROKER_ADDRESS, BROKER_PORT)
 
 # subscribe to the topic
-client.subscribe("8x8arena/test")
+client.subscribe("8x8arena/game/start")
 
 # loop to receive messages
 client.loop_forever()
