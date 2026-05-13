@@ -58,16 +58,30 @@ def tick(state):
     else:
         # Move
         green["pixels"] = move_snake(green["pixels"], direction)
-        
+
+# add joystick middle to start/ restart match   
+def start_button(event):
+    global state
+    if event.action != 'pressed':
+        return
+    if state["game_status"] == "waiting":
+        state["game_status"] = "playing"
+        print("Match started!")
+
+    elif state["game_status"] == "finished":
+        state = make_waiting_state()
+        print("Match reset - waiting for new start")
+
+    else:
+        print("Match already in progress!")
 
 def main():
     print("8x8 Arena starting...")
     print(f"Initial state loaded: game_status = {state['game_status']}")
+    # the callback joystick
+    sense.stick.direction_middle = start_button
 
-    state["game_status"] = "playing"
-    state["food"] = [[2, 1], [2, 3]]
-    state["snakes"]["green"]["direction"] = "DOWN"
-    state["pending_cards"]["green"] = []
+   
     try:
         while True:
             tick(state)
