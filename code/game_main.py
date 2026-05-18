@@ -9,10 +9,69 @@ from snake import DELTAS, BOARD_SIZE
 from sense_hat import SenseHat
 import random
 import time
+import json
+import paho.mqtt.client as mqtt
+
 
 # create a inicial state
 sense = SenseHat()
 state = make_waiting_state()
+
+# MQTT broker config
+BROKER_ADDRESS = "broker.hivemq.com"
+BROKER_PORT = 1883
+
+# Map MQTT card names to internal direction strings
+CARD_TO_DIRECTION = {
+    "MOVE_UP": "UP",
+    "MOVE_DOWN": "DOWN",
+    "MOVE_LEFT": "LEFT",
+    "MOVE_RIGHT": "RIGHT",
+    "POWER_PILL": "POWER_PILL",
+    "TURBO": "TURBO"
+}
+
+def handle_join(client, userdata, message):
+    """Callback when the player join"""
+    payload = json.loads(message.payload.decode("utf-8"))
+    nickname = payload["nickname"]
+    team = payload["team"]
+
+    #find the player's team
+    state["players"][nickname] = team
+    print(f"Player joined: {nickname}({team})")
+
+# Callback form the cards played 
+def handle_cards(client, userdata, message):
+    payload = json.loads(message.payload.decode("utf-8"))
+    nickname = payload["nickname"]
+    card = payload["card"]
+
+    #find the player's team 
+    if nickname not in state["players"]:
+        print(f"Unknown player: {nickname}, ignoring card")
+        return
+    team = state["players"][nickname]
+
+    # convert card name to direction
+    direction= CARD_TO_DIRECTION.get(card, None)
+    if direction is None:
+        print(f"Unknown card: {card}")
+        return
+
+    # add the card to the queue
+    state["pending_cards"][team].append(direction)
+    print(f"Card form {nickname} ({team}): {card}  → {direction}")
+
+def setup_mqtt():
+    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
+    client.message_callback_add("8x8arena/players/join", handle_join)
+    client.message_callback_add("8x8arena/input/card", handle_cards)
+    client.connect(BROKER_ADDRESS, BROKER_PORT)
+    client.subscribe("8x8arena/players/join")
+    client.subscribe("8x8arena/input/card")
+    client.loop_start()
+    return client
 
 # process game tick: move green snake , check food collsion 
 def tick(state):
@@ -59,6 +118,8 @@ def tick(state):
         # Move
         green["pixels"] = move_snake(green["pixels"], direction)
 
+    
+
 # add joystick middle to start/ restart match   
 def start_button(event):
     global state
@@ -80,6 +141,8 @@ def main():
     print(f"Initial state loaded: game_status = {state['game_status']}")
     # the callback joystick
     sense.stick.direction_middle = start_button
+    mqtt_client = setup_mqtt()
+    print("MQTT connected, listening for players...")
 
    
     try:
@@ -93,7 +156,11 @@ def main():
             
     except KeyboardInterrupt:
         print("\nShutting down... ")
+    finally:
         sense.clear()
+        mqtt_client.loop_stop()
+        mqtt_client.disconnect()
+        print("Cleaned up. Bye.")
 
 if __name__ == "__main__":
     main()

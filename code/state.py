@@ -3,6 +3,7 @@ def make_waiting_state():
     return {
         "game_status": "waiting",
         "tick_count": 0,
+        "players":{},
         "snakes": {
             "green": {
                 "pixels":  [[0,0], [1,0], [2,0]],
