@@ -2,6 +2,9 @@ def make_waiting_state():
     """Returns a fresh game state dict, ready to start a new match."""
     return {
         "game_status": "waiting",
+        "winner": None,
+        "win_reason": None,
+        "victory_shown": False,
         "tick_count": 0,
         "players":{},
         "snakes": {
@@ -24,6 +27,7 @@ def make_waiting_state():
         "pending_cards": {
             "green": [],
             "purple": []
+            
         }
     }
 if __name__ == "__main__":

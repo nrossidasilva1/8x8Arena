@@ -73,50 +73,73 @@ def setup_mqtt():
     client.loop_start()
     return client
 
-# process game tick: move green snake , check food collsion 
-def tick(state):
-    state["tick_count"] += 1
-    # only rappens if the game is "playing"
-    if state ["game_status"] != "playing":
-        return
-    green = state["snakes"]["green"]
-    pending = state["pending_cards"]["green"]
-    
-    #decide direction
-    if len(pending) == 0:
-        # queue is empty : use the actual direction
-        direction = green["direction"]
-    else: 
-        # queue is not empty : shuffle and use a card
-        direction = random.choice(pending)
-        green["direction"] = direction
-        #clean the queue
-        state["pending_cards"]["green"] = [] 
+# create the both snakes  for the teams game
+def process_snake(state, team):    # Process a tick for a single snake (green or purple)
+    # get thid team's snake and peding cards
+    snake = state["snakes"][team]
+    pending = state["pending_cards"][team]
 
+    # decide direction
+    if len(pending) == 0:
+        direction = snake["direction"]
+    else:
+        direction = random.choice(pending)
+        snake["direction"] = direction
+        state["pending_cards"][team] = []
     # filter the direction
     if direction not in ["UP", "DOWN", "LEFT", "RIGHT"]:
         return
-
-    # calculate new head position
-    head = green["pixels"][-1]
+    # calculate new head with wrap-around
+    head = snake["pixels"][-1]
     dx, dy = DELTAS[direction]
     new_head = [(head[0] + dx) % BOARD_SIZE, (head[1] + dy) % BOARD_SIZE]
-
-    # check if the food is at new head position
+    # check the food colsion , grow and spawn new food
     if new_head in state["food"]:
-        # Grow
-        green["pixels"] = grow_snake(green["pixels"], direction)
-        # Remove food
+        snake["pixels"] = grow_snake(snake["pixels"], direction)
         state["food"].remove(new_head)
-        # score up
-        green["score"] += 1
-        # spawn new food
+        snake["score"] += 1
         all_snakes = [state["snakes"]["green"]["pixels"], state["snakes"]["purple"]["pixels"]]
         new_food = spawn_food(all_snakes, state["food"], count=1)
         state["food"].extend(new_food)
     else:
-        # Move
-        green["pixels"] = move_snake(green["pixels"], direction)
+        snake["pixels"] = move_snake(snake["pixels"], direction)
+# Check if any team won and update state to finished
+def check_victory(state):
+    # check if game is currently playing
+    if state["game_status"] != "playing":
+        return
+    # check the teams
+    for team in ["green", "purple"]:
+        if state["snakes"][team]["score"] >= 10:
+            state["game_status"] = "finished"
+            state["winner"] = team
+            state["win_reason"] = "score"
+            print(f"VICTORY! {team.upper()} TEAM WINS!")
+            return
+ 
+ # show the winner into the display
+def show_victory(state):
+    winner = state["winner"]
+    if winner == "green":
+        color = (0, 255, 0)
+    else:
+        color = (160, 32, 240)
+    
+    sense.show_message(f"{winner.upper()}  WINS!", text_colour=color, back_colour=(0, 0, 0))
+    sense.clear()
+    state["victory_shown"] = True                              
+
+
+# one gametick , both snakes move,check food collision.
+def tick(state):
+    state["tick_count"] += 1
+    if state["game_status"] != "playing":
+        return
+    process_snake(state,"green")
+    process_snake(state,"purple")
+    check_victory(state)
+
+ 
 
     
 
@@ -144,13 +167,19 @@ def main():
     mqtt_client = setup_mqtt()
     print("MQTT connected, listening for players...")
 
+
    
     try:
         while True:
             tick(state)
+            # if game just finished, show victory message
+            if state["game_status"] == "finished" and state["victory_shown"] == False:
+                show_victory(state)
             # call the draw_state function to update the LED matrix
             draw_state(state)
-            print(f"Tick {state['tick_count']}: green at {state['snakes']['green']['pixels']}, score={state['snakes']['green']['score']}")
+            print(f"Tick {state['tick_count']}:")
+            print(f"  Green:  {state['snakes']['green']['pixels']}, score={state['snakes']['green']['score']}")
+            print(f"  Purple: {state['snakes']['purple']['pixels']}, score={state['snakes']['purple']['score']}")
             time.sleep(1)
             # update the state
             
