@@ -94,9 +94,11 @@ def process_snake(state, team):    # Process a tick for a single snake (green or
     dx, dy = DELTAS[direction]
     new_head = [(head[0] + dx) % BOARD_SIZE, (head[1] + dy) % BOARD_SIZE]
     # check the food colsion , grow and spawn new food
-    if new_head in state["food"]:
+    eaten = check_food_eaten(new_head, state["food"])
+
+    if eaten is not None:
         snake["pixels"] = grow_snake(snake["pixels"], direction)
-        state["food"].remove(new_head)
+        state["food"].remove(eaten)
         snake["score"] += 1
         all_snakes = [state["snakes"]["green"]["pixels"], state["snakes"]["purple"]["pixels"]]
         new_food = spawn_food(all_snakes, state["food"], count=1)
@@ -166,9 +168,7 @@ def main():
     sense.stick.direction_middle = start_button
     mqtt_client = setup_mqtt()
     print("MQTT connected, listening for players...")
-
-
-   
+       
     try:
         while True:
             tick(state)

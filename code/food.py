@@ -31,8 +31,7 @@ def spawn_food(snakes_pixel, existing_food, count=1):
     return new_food 
 
 
-def check_food_eaten(snake, food_list):
-    head = snake[-1]
+def check_food_eaten(head, food_list):
     if head in food_list:
         return head
     return None 
@@ -44,7 +43,7 @@ if __name__ == "__main__":
     print(f"Initial food: {food}")
 
     # simulate snake etaing food
-    snake_eating = [[0, 0], [1, 0], food[0]]
-    eaten = check_food_eaten(snake_eating, food)
+    head = food[0]
+    eaten = check_food_eaten(head, food)
     print(f"Ate: {eaten}")
 
