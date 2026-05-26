@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8X8 Arena</title>
+    
+    <!-- Press Start 2P font -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
+    <!-- Bulma CSS framework -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css">
+    
+    <!-- Our custom CSS for arcade theme overrides -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- MQTT.js library -->
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+</head>
+<body>
+    <section class="section">
+        <div class="container has-text-centered">
+            
+            <!-- LOGO -->
+            <video 
+                class="lobby-logo"
+                autoplay 
+                muted 
+                loop 
+                playsinline
+            >
+                <source src="image/logo.mp4" type="video/mp4">
+                8x8 Arena
+            </video>
+            
+            <!-- BOX with login form -->
+            <div class="box mt-5">
+                
+                <!-- Input -->
+                <div class="field">
+                    <label class="label">Add your name and choose your team to the battles beginning!</label>
+                    <div class="control">
+                        <input 
+                            class="input" 
+                            type="text" 
+                            id="nickname-input"
+                            placeholder="Enter your nickname"
+                            maxlength="15"
+                        >
+                    </div>
+                    <p class="help is-danger" id="error-msg"></p>
+                </div>
+                
+                <!-- Buttons -->
+                <div class="field is-grouped is-grouped-centered mt-5">
+                    <button class="button is-success is-medium" id="join-green">Join Green Team</button>
+                    <button class="button is-link is-medium ml-3" id="join-purple">Join Purple Team</button>
+                </div>
+                
+            </div>
+            
+            <!-- HOW TO PLAY -->
+            <div class="box mt-5 has-text-left">
+                <h2 class="subtitle is-4 has-text-centered">How to play</h2>
+                <p class="mb-3">
+                    <strong>Concept:</strong> Two teams (Green and Purple) compete on a shared 8x8 LED grid. 
+                    Players control their team's snake by playing direction cards from their phone or computer (Webbrowser).
+                </p>
+                <p class="mb-3">
+                    Every second, one card from the team's pending plays is chosen at random and 
+                    the snake moves accordingly -<span class="has-text-danger"> More players = more fun, because the chaos of the decisions!!</span>. Eat yellow food to grow and score points.
+                </p>
+                <p class="mb-3">
+                    <strong>Win condition:</strong> First team to reach 10 points wins, 
+                    or reduce the opponent snake to zero pixels.
+                </p>
+                <p class="is-size-7 has-text-grey has-text-centered mt-4">
+                    Full rules on the project repository.
+                </p>
+            </div>
+            
+            <!-- Player count footer -->
+            <div class="mt-5">
+                <p>GREEN: <span id="count-green">0</span> | PURPLE: <span id="count-purple">0</span></p>
+            </div>
+            
+        </div>
+    </section>
+    
+    <script src="js/lobby.js"></script>
+</body>
+</html>
