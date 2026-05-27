@@ -1,4 +1,4 @@
-/* === LOBBY LOGO === */
+/* === lobby logo === */
 .lobby-logo {
     width: 350px;
     height: 350px;
@@ -6,4 +6,59 @@
     object-fit: cover;
     display: block;
     margin: 0 auto;
+}
+
+/*=== arena grid ===*/
+.arena-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    gap: 0.5rem;
+    width: 90%;
+    max-width: 400px;
+    aspect-ratio: 1/1;
+    margin: 0 auto;
+    background-color: #0a0a0a;
+    padding: 10px;
+    border: 2px solid #06f6ea;
+    border-radius: 8px;
+}
+
+.arena-cell {
+    background-color:#1a1a2e;
+    border-radius:3px;
+}
+
+/*=== hand ==*/
+.hand-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.card {
+    width: 100px;
+    height: 110px;
+    background-color: #1a1a2e;
+    color: #faebd7;
+    border: 2px solid #ff0090;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.7rem;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 15px #542df3;
+}
+
+.card:active {
+    transform: scale(0.95);
 }

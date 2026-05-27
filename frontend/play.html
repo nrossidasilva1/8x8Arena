@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>8x8 Arena - Battle</title>
+        <!-- font-->
+         <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+         <!-- bulma framework and css custom-->
+          <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css">
+          <link rel="stylesheet" href="css/style.css">
+          <!-- mqtt.js-->
+           <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    </head>
+    <body>
+        <section class="section">
+            <div class="container">
+                <!-- header-->
+                    <div class="box has-text-centered">
+                        <p class="subtitle is-5 mb-2">
+                            Player: <span id="player-name">-</span> | Team: <span id="player-team">-</span>
+                        </p>
+                        <p class="subtitle is-6">
+                            GREEN: <span id="score-green">0</span> — PURPLE: <span id="score-purple">0</span>
+
+                        </p>
+                    </div>
+                    <!-- arena grin-->
+                     <div class="box mt-5 has-text-centered">
+                        <div id="arena" class="arena-grid">
+                            <!--create by JS-->
+                        </div>
+                     </div>
+                    
+                    <!--player hand-->
+                    <div class="box mt-5">
+                        <h3 class="subtitle is-5 has-text-centered mb-3">Your hand</h3>
+                        <div class="hand-container" id="hand">
+                            <!--create by JS-->
+                        </div>
+                    </div>
+                </div>
+        </section>
+        
+        <script src="js/play.js"></script>
+
+    </body>
+</html>
