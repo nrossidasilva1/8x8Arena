@@ -3,6 +3,8 @@ const BOARD_SIZE = 8;
 const BROKER_URL = "wss://broker.hivemq.com:8884/mqtt";
 const TOPIC_STATE = "8x8arena/state/game";
 const TOPIC_CARD = "8x8arena/input/card";
+const TOPIC_HAND_PREFIX = "8x8arena/state/hand/";
+
 // colors
 const COLOR_GREEN = "#00ff00";
 const COLOR_PURPLE = "#a020f0";
@@ -65,16 +67,19 @@ function buildGrid() {
 }
 
 // player hand
-function buildHand() {
-    // 4 cards 
-    const placeholders = ["UP", "RIGHT", "DOWN", "LEFT"];
+function buildHand(hand) {
+    // create 4 cards
+    const placeholder = ["MOVE_UP", "MOVE_DOWN", "MOVE_LEFT", "MOVE_RIGHT"];
 
-    for (let i = 0; i < placeholders.length; i++) {
+    for (let i = 0; i < placeholder.length; i++) {
+        const protocolName = placeholder[i];
+        const displayName = PROTOCOL_TO_DISPLAY[protocolName];
+
         const card = document.createElement("div");
         card.className = "card";
-        card.textContent = placeholders[i];
-        // action when the card is clicked
-        card.addEventListener("click", () => playCard(placeholders[i]));   
+        card.textContent = displayName;
+        //action when the card is clicked
+        card.addEventListener("click", () => playCardProtocol(protocolName));
         handEl.appendChild(card);
     }
     console.log("Player hand built");
@@ -116,6 +121,15 @@ function setupMQTT() {
     mqttClient = mqtt.connect(BROKER_URL);
     mqttClient.on("connect", () => {
         console.log("Connected to broker");
+        const nickname = localStorage.getItem("nickname");
+        const handTopic = TOPIC_HAND_PREFIX + nickname;
+        mqttClient.subscribe(handTopic, (err) => {
+            if (err) {
+                console.error("Hand subscribe error", err);
+            }else {
+                console.log("Subscribed to my hand");
+            }
+        });
         // subscribe the game state
         mqttClient.subscribe(TOPIC_STATE, (err) => {
             if (err) {
@@ -128,44 +142,65 @@ function setupMQTT() {
     // arrive msg
     mqttClient.on("message", (topic, message) => {
         // parse the msg
-        const state = JSON.parse(message.toString());
+        const data = JSON.parse(message.toString());
         // route by topic
         if (topic === TOPIC_STATE) {
-            renderState(state);
+            renderState(data);
         }
+
+        // this is my hand?
+        const nickname = localStorage.getItem("nickname");
+        if (topic === TOPIC_HAND_PREFIX + nickname) {
+            renderHand(data.hand);
+        }
+
+
     });
     mqttClient.on("error", (err) => {
         console.error("MQTT error", err);
     });
 }
-// card name mapping 
-const DISPLAY_TO_PROTOCOL = {
-    "UP": "MOVE_UP",
-    "RIGHT": "MOVE_RIGHT",
-    "DOWN": "MOVE_DOWN",
-    "LEFT": "MOVE_LEFT"
+// protocol - display label
+const PROTOCOL_TO_DISPLAY = {
+    "MOVE_UP": "UP",
+    "MOVE_DOWN": "DOWN",
+    "MOVE_LEFT": "LEFT",
+    "MOVE_RIGHT": "RIGHT",
+    "POWER_PILL": "POWER",
+    "TURBO": "TURBO",
 };
-// play card
-function playCard(displayName) {
-    // check conection mqtt
+
+function renderHand(handCards) {
+    // clear the hand
+    handEl.innerHTML = "";
+    // create card for each real card
+    for (let i = 0; i < handCards.length; i++) {
+        const protocolName = handCards[i];
+        const displayName = PROTOCOL_TO_DISPLAY[protocolName];
+
+        const card = document.createElement("div");
+        card.className = "card";
+        card.textContent = displayName;
+        card.addEventListener("click", () => playCardProtocol(protocolName));
+        handEl.appendChild(card);
+    }
+}
+function playCardProtocol(protocolCard) {
     if (mqttClient === null || !mqttClient.connected) {
-        console.warn("MQTT not connected, can't play card");
+        console.warn("MQTT not connected");
         return;
     }
-    // convert display
-    const protocolCard = DISPLAY_TO_PROTOCOL[displayName];
-    // build the payload
     const nickname = localStorage.getItem("nickname");
     const payload = JSON.stringify({
         nickname: nickname,
         card: protocolCard
     });
-    // publish
     mqttClient.publish(TOPIC_CARD, payload, () => {
-        console.log(`Played card: ${displayName} (${protocolCard})`);
+        console.log(`Played card: ${protocolCard}`);
     });
-
 }
+
+
 
 
 // init
