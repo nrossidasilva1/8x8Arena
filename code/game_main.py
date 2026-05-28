@@ -88,6 +88,10 @@ def setup_mqtt():
 def process_snake(state, team):    # Process a tick for a single snake (green or purple)
     # get thid team's snake and peding cards
     snake = state["snakes"][team]
+
+    # safety check - skip if snake is empty
+    if len(snake["pixels"]) == 0:
+        return
     pending = state["pending_cards"][team]
 
     # decide direction
