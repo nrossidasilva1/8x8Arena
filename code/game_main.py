@@ -95,27 +95,53 @@ def process_snake(state, team):    # Process a tick for a single snake (green or
         direction = snake["direction"]
     else:
         direction = random.choice(pending)
-        snake["direction"] = direction
+        # only save the move cards no power pills
+        if direction in ["UP", "DOWN", "LEFT", "RIGHT"]:
+            snake["direction"] = direction
         state["pending_cards"][team] = []
-    # filter the direction
+    
+    # active turbo car but don't move
+    if direction == "TURBO":
+        snake["turboActive"] = True
+        snake["turboTicks"] = 7
+        print(f"{team} Activated TURBO!")
+        return
+    
+    #  only real direction pass fot the filter
     if direction not in ["UP", "DOWN", "LEFT", "RIGHT"]:
         return
-    # calculate new head with wrap-around
-    head = snake["pixels"][-1]
-    dx, dy = DELTAS[direction]
-    new_head = [(head[0] + dx) % BOARD_SIZE, (head[1] + dy) % BOARD_SIZE]
-    # check the food colsion , grow and spawn new food
-    eaten = check_food_eaten(new_head, state["food"])
-
-    if eaten is not None:
-        snake["pixels"] = grow_snake(snake["pixels"], direction)
-        state["food"].remove(eaten)
-        snake["score"] += 1
-        all_snakes = [state["snakes"]["green"]["pixels"], state["snakes"]["purple"]["pixels"]]
-        new_food = spawn_food(all_snakes, state["food"], count=1)
-        state["food"].extend(new_food)
+    
+    # check the turbo
+    if snake["turboActive"]:
+        steps = 2
     else:
-        snake["pixels"] = move_snake(snake["pixels"], direction)
+        steps = 1
+    # loop to move the normally or turbo
+    for _ in range(steps):
+        # calculate new head with wrap-around
+        head = snake["pixels"][-1]
+        dx, dy = DELTAS[direction]
+        new_head = [(head[0] + dx) % BOARD_SIZE, (head[1] + dy) % BOARD_SIZE]
+        # check the food colsion , grow and spawn new food
+        eaten = check_food_eaten(new_head, state["food"])
+
+        if eaten is not None:
+            snake["pixels"] = grow_snake(snake["pixels"], direction)
+            state["food"].remove(eaten)
+            snake["score"] += 1
+            all_snakes = [state["snakes"]["green"]["pixels"], state["snakes"]["purple"]["pixels"]]
+            new_food = spawn_food(all_snakes, state["food"], count=1)
+            state["food"].extend(new_food)
+        else:
+            snake["pixels"] = move_snake(snake["pixels"], direction)
+    
+    # turbo count down
+    if snake["turboActive"]:
+        snake["turboTicks"] -= 1
+        if snake["turboTicks"] <= 0:
+            snake["turboActive"] = False
+            print(f"{team} turbo gas ended!")
+
 # Check if any team won and update state to finished
 def check_victory(state):
     # check if game is currently playing

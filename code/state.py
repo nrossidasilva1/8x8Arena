@@ -14,14 +14,16 @@ def make_waiting_state():
                 "score": 0,
                 "direction": "RIGHT",       
                 "powerPillActive": False,
-                "turboActive": False
+                "turboActive": False,
+                "turboTicks": 0
             },
             "purple": {
                 "pixels":[[7, 7], [6, 7], [5, 7]],
                 "score": 0,
                 "direction": "LEFT",
                 "powerPillActive": False,
-                "turboActive": False
+                "turboActive": False,
+                "turboTicks": 0
             }
         },
         "food":[[1, 1], [6, 6]],
