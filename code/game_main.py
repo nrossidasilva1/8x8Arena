@@ -22,6 +22,7 @@ mqtt_client = None
 BROKER_ADDRESS = "broker.hivemq.com"
 BROKER_PORT = 1883
 TOPIC_STATE_OUT = "8x8arena/state/game"
+TOPIC_HAND_PREFIX = "8x8arena/state/hand/"
 
 # Map MQTT card names to internal direction strings
 CARD_TO_DIRECTION = {
@@ -41,7 +42,10 @@ def handle_join(client, userdata, message):
 
     #find the player's team
     state["players"][nickname] = team
+    state["hands"][nickname]= draw_hand(4)
+    publish_hand(nickname)
     print(f"Player joined: {nickname}({team})")
+
 
 # Callback form the cards played 
 def handle_cards(client, userdata, message):
@@ -63,6 +67,11 @@ def handle_cards(client, userdata, message):
 
     # add the card to the queue
     state["pending_cards"][team].append(direction)
+    hand = state["hands"].get(nickname, [])
+    if card in hand:
+        hand.remove(card)
+        hand.append(draw_card())
+        publish_hand(nickname)
     print(f"Card form {nickname} ({team}): {card}  → {direction}")
 
 def setup_mqtt():
@@ -142,6 +151,21 @@ def publish_state(state):
     payload = json.dumps(state)
     # publish
     mqtt_client.publish(TOPIC_STATE_OUT, payload)
+
+# publish a player hand via mqtt
+def publish_hand(nickname):
+    if mqtt_client is None:
+        return
+    
+    hand = state["hands"][nickname]
+    topic = TOPIC_HAND_PREFIX + nickname
+    payload = json.dumps({
+        "nickname": nickname,
+        "hand": hand
+    })
+    mqtt_client.publish(topic, payload)
+    print(f"Published hand for {nickname}: {hand}")
+
 
 
 

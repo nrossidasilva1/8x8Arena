@@ -2,7 +2,7 @@
 import random  # to use the shuffle function
 
 #create the card deck
-cards = ["UP", "DOWN", "LEFT", "RIGHT", "POWER_PILL", "TURBO"]
+cards = ["MOVE_UP", "MOVE_DOWN", "MOVE_LEFT", "MOVE_RIGHT", "POWER_PILL", "TURBO"]
 weights = [20, 20, 20, 20, 10, 10]
 
 # function with return a random card

@@ -7,6 +7,7 @@ def make_waiting_state():
         "victory_shown": False,
         "tick_count": 0,
         "players":{},
+        "hands":{},
         "snakes": {
             "green": {
                 "pixels":  [[0,0], [1,0], [2,0]],
