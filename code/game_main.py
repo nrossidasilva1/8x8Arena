@@ -106,7 +106,11 @@ def process_snake(state, team):    # Process a tick for a single snake (green or
         snake["turboTicks"] = 7
         print(f"{team} Activated TURBO!")
         return
-    
+    # habdle BITE (POWER_PILL)
+    if direction == "POWER_PILL":
+        bite_snake(state, team)
+        return
+
     #  only real direction pass fot the filter
     if direction not in ["UP", "DOWN", "LEFT", "RIGHT"]:
         return
@@ -141,6 +145,23 @@ def process_snake(state, team):    # Process a tick for a single snake (green or
         if snake["turboTicks"] <= 0:
             snake["turboActive"] = False
             print(f"{team} turbo gas ended!")
+
+# bite (Power pill) removes 2 from the opponet
+def bite_snake(state, team):
+    opponent = "purple" if team == "green" else "green"
+    opp_pixels = state["snakes"][opponent]["pixels"]
+    # remove 2 pixels from tail
+    for _ in range(2):
+        if len(opp_pixels) > 0:
+            opp_pixels.pop(0)
+
+    print (f"{team} BIT {opponent}! Now {len(opp_pixels)} pixels left!")
+     # elimination check
+    if len(opp_pixels) <= 0:
+        state["game_status"] = "finished"
+        state["winner"] = team
+        state["win_reason"] = "elimination"
+        print(f"{team.upper()} WINS by elimination!")
 
 # Check if any team won and update state to finished
 def check_victory(state):
@@ -246,7 +267,7 @@ def main():
             print(f"Tick {state['tick_count']}:")
             print(f"  Green:  {state['snakes']['green']['pixels']}, score={state['snakes']['green']['score']}")
             print(f"  Purple: {state['snakes']['purple']['pixels']}, score={state['snakes']['purple']['score']}")
-            time.sleep(0.7)
+            time.sleep(0.75)
             # update the state
             
     except KeyboardInterrupt:

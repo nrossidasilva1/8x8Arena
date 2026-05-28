@@ -18,7 +18,8 @@ const arenaEl = document.getElementById("arena");
 const handEl = document.getElementById("hand");
 const scoreGreenEl = document.getElementById("score-green");
 const scorePurpleEl = document.getElementById("score-purple");
-
+const victoryBanner = document.getElementById("victory-banner");
+const victoryText = document.getElementById("victory-text");
 
 // state
 let cells = [];  // arry for cells x , y  (mobile grid) = element div
@@ -114,6 +115,18 @@ function renderState(state) {
     // update score
     scoreGreenEl.textContent = state.snakes.green.score;
     scorePurpleEl.textContent = state.snakes.purple.score;
+
+    // victory banner
+    if (state.game_status === "finished" && state.winner) {
+        const winner = state.winner.toUpperCase();
+        const reason = state.win_reason === "elimination" ? "by elimination" : "";
+        victoryText.style.color = state.winner === "green" ? "#00ff00" : "#a020f0";
+        victoryText.textContent = `🏆 ${winner} WINS ${reason}!`;
+        victoryBanner.classList.remove("is-hidden");
+    }else {
+        victoryBanner.classList.add("is-hidden");
+    }
+
 }
 
 // setup mqtt
@@ -166,7 +179,7 @@ const PROTOCOL_TO_DISPLAY = {
     "MOVE_DOWN": "DOWN",
     "MOVE_LEFT": "LEFT",
     "MOVE_RIGHT": "RIGHT",
-    "POWER_PILL": "POWER",
+    "POWER_PILL": "BITE",
     "TURBO": "TURBO",
 };
 
