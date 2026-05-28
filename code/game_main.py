@@ -16,10 +16,12 @@ import paho.mqtt.client as mqtt
 # create a inicial state
 sense = SenseHat()
 state = make_waiting_state()
+mqtt_client = None
 
 # MQTT broker config
 BROKER_ADDRESS = "broker.hivemq.com"
 BROKER_PORT = 1883
+TOPIC_STATE_OUT = "8x8arena/state/game"
 
 # Map MQTT card names to internal direction strings
 CARD_TO_DIRECTION = {
@@ -131,6 +133,18 @@ def show_victory(state):
     sense.clear()
     state["victory_shown"] = True                              
 
+# publish the  current game state as JSON
+def publish_state(state):
+    # check mqqt client exist
+    if mqtt_client is None:
+        return
+    # convert state to JSON string
+    payload = json.dumps(state)
+    # publish
+    mqtt_client.publish(TOPIC_STATE_OUT, payload)
+
+
+
 
 # one gametick , both snakes move,check food collision.
 def tick(state):
@@ -166,6 +180,7 @@ def main():
     print(f"Initial state loaded: game_status = {state['game_status']}")
     # the callback joystick
     sense.stick.direction_middle = start_button
+    global mqtt_client
     mqtt_client = setup_mqtt()
     print("MQTT connected, listening for players...")
        
@@ -177,10 +192,11 @@ def main():
                 show_victory(state)
             # call the draw_state function to update the LED matrix
             draw_state(state)
+            publish_state(state)
             print(f"Tick {state['tick_count']}:")
             print(f"  Green:  {state['snakes']['green']['pixels']}, score={state['snakes']['green']['score']}")
             print(f"  Purple: {state['snakes']['purple']['pixels']}, score={state['snakes']['purple']['score']}")
-            time.sleep(1)
+            time.sleep(0.7)
             # update the state
             
     except KeyboardInterrupt:
