@@ -42,6 +42,7 @@ real LED matrix on a Raspberry Pi sitting on someone's desk.
 The Pi is the host. The browsers are the players. The host opens
 the table, the players join. Real-time IoT with a physical
 handshake.
+
 ---
 ## How it works
 
@@ -50,6 +51,7 @@ Two teams (Green and Purple) fight on an 8x8 LED grid attached to a Raspberry Pi
 If you've heard of "Twitch Plays Pokemon," same vibe. Except instead of Pokemon, it's Snake. And instead of a screen, it's a real LED matrix on a Raspberry Pi sitting on someone's desk.
 
 The Pi is the host. The browsers are the players. The host opens the table, the players join. Real-time IoT with a physical handshake.
+
 ---
 ## How to play
 
@@ -79,6 +81,7 @@ The rules in full are in [docs/RULES.md](docs/RULES.md).
 - [Project Proposal](PROPOSAL.pdf)
 - [Game Rules](docs/RULES.md) — for players
 - [MQTT Protocol](docs/PROTOCOL.md) — for developers
+
 ---
 
 ## Running it yourself
@@ -162,6 +165,7 @@ this assignment — finished beats perfect.
 
 **Nicolas Rossi da Silva** — Student ID: W20119127  
 HDip Computer Science, 2026
+
 ---
 ## License
 
