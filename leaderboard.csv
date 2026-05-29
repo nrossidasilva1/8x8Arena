@@ -1,0 +1,5 @@
+timestamp,winner,win_reason,green_score,purple_score,green_players,purple_players
+2026-05-29T08:28:40.297071,green,elimination,1,0,final,-
+2026-05-29T09:26:57.507459,green,elimination,0,0,onlinetest,-
+2026-05-29T09:33:00.056137,purple,elimination,0,7,-,Mobile1
+2026-05-29T13:08:10.279294,purple,score,4,10,Erosenin,nico
