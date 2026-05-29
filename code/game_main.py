@@ -5,6 +5,9 @@ from food import spawn_food, check_food_eaten
 from deck import draw_card, draw_hand
 from display import draw_state
 from snake import DELTAS, BOARD_SIZE
+import csv
+import os
+from datetime import datetime
 # import the standed libraries and sense hat
 from sense_hat import SenseHat
 import random
@@ -167,6 +170,37 @@ def bite_snake(state, team):
         state["win_reason"] = "elimination"
         print(f"{team.upper()} WINS by elimination!")
 
+
+def save_to_leaderboard(state):
+    # make leaderboard to competiton
+    filepath = "leaderboard.csv"
+    file_exists = os.path.exists(filepath)
+    #build list of nick name per team from players
+    green_players = [nick for nick, team in state["players"].items() if team == "green"]
+    purple_players = [nick for nick, team in state["players"].items() if team == "purple"]
+
+    # join the nicknames with semicolons
+    green_names = ";".join(green_players) if green_players else "-"
+    purple_names = ";".join(purple_players) if purple_players else "-"
+
+    with open( filepath, "a", newline="") as f:
+        writer = csv.writer(f)
+        # write and header if not exist
+        if not file_exists:
+            writer.writerow(["timestamp", "winner", "win_reason", "green_score", "purple_score", "green_players", "purple_players"])
+        
+        # write the game and date
+        writer.writerow([
+            datetime.now().isoformat(),
+            state["winner"],
+            state["win_reason"],
+            state["snakes"]["green"]["score"],
+            state["snakes"]["purple"]["score"],
+            green_names,
+            purple_names
+        ])
+        print(f"Match saved to leaderboard.csv (green: {green_names} | purple: {purple_names})")
+
 # Check if any team won and update state to finished
 def check_victory(state):
     # check if game is currently playing
@@ -191,6 +225,7 @@ def show_victory(state):
     
     sense.show_message(f"{winner.upper()}  WINS!", text_colour=color, back_colour=(0, 0, 0))
     sense.clear()
+    save_to_leaderboard(state)
     state["victory_shown"] = True                              
 
 # publish the  current game state as JSON
