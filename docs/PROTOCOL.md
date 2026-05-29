@@ -16,6 +16,7 @@ whatever), the info you need is here.
 - **The MQTT broker** — sits between them.
 
 The Pi and the browsers never talk directly.
+```
    ┌─────────┐         ┌──────────┐         ┌────────┐
    │ Browser │ ◄─────► │  HiveMQ  │ ◄─────► │   Pi   │
    │ (WSS)   │         │  broker  │         │ (TCP)  │
@@ -24,6 +25,8 @@ The Pi and the browsers never talk directly.
        │                                         │
    Plays cards                            Drives LED matrix
    Shows grid                             Owns game state
+```
+
 ---
 
 ## Broker
