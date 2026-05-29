@@ -127,7 +127,13 @@ players join.
 
 Snakes pass through each other. There's no self-collision either —
 a snake can fold onto itself without dying. The only way to shorten
-an opponent is BITE. This is intentional for v1.
+an opponent is BITE.
+
+The truth: v1.0 had collision and a predator mode for Power Pill,
+but the logic kept breaking once snakes wrapped around borders,
+overlapped, and grew. With a deadline coming, we cut both and
+shipped BITE instead (instant, deterministic, hard to break).
+Proper collision is on the v2 list.
 
 Planned for v2:
 
