@@ -5,7 +5,7 @@
 ![Architecture](docs/img/architecture.jpg)
 
 **Play it live:** https://8x8arena.netlify.app  
-
+**Watch the video:** http://youtube.com/watch?v=_Jz3fQ_o6f4
 
 ---
 ## What is this
